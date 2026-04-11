@@ -2,17 +2,17 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Smile, Frown, Heart, Coffee, Sun, CloudRain } from "lucide-react";
+import { Smile, Frown, Heart, Coffee, Sun, CloudRain, Star, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
 
 const moods = [
-  { id: 'happy', icon: Smile, label: 'Happy', color: 'bg-yellow-100 text-yellow-600', heart: '❤️' },
-  { id: 'loved', icon: Heart, label: 'Loved', color: 'bg-pink-100 text-pink-600', heart: '💖' },
-  { id: 'calm', icon: Coffee, label: 'Calm', color: 'bg-blue-100 text-blue-600', heart: '✨' },
-  { id: 'energetic', icon: Sun, label: 'Energetic', color: 'bg-orange-100 text-orange-600', heart: '🔥' },
-  { id: 'sad', icon: Frown, label: 'Sad', color: 'bg-indigo-100 text-indigo-600', heart: '🥺' },
-  { id: 'tired', icon: CloudRain, label: 'Tired', color: 'bg-slate-100 text-slate-600', heart: '☁️' },
+  { id: 'happy', icon: Smile, label: 'Happy', color: 'bg-yellow-50 text-yellow-600', heart: '❤️' },
+  { id: 'loved', icon: Heart, label: 'Loved', color: 'bg-pink-50 text-pink-600', heart: '💖' },
+  { id: 'calm', icon: Coffee, label: 'Calm', color: 'bg-blue-50 text-blue-600', heart: '✨' },
+  { id: 'energetic', icon: Sun, label: 'Energetic', color: 'bg-orange-50 text-orange-600', heart: '🔥' },
+  { id: 'sad', icon: Frown, label: 'Sad', color: 'bg-indigo-50 text-indigo-600', heart: '🥺' },
+  { id: 'tired', icon: CloudRain, label: 'Tired', color: 'bg-slate-50 text-slate-600', heart: '☁️' },
 ];
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -28,7 +28,7 @@ interface MoodEntry {
 export default function MoodTracker({ user }: { user: string }) {
   const [isSaving, setIsSaving] = useState(false);
 
-  const { data: moodsData, error, isLoading, mutate } = useSWR(user ? ["/api/mood", user] : null, ([url]) => fetcher(url), {
+  const { data: moodsData, isLoading, mutate } = useSWR(user ? ["/api/mood", user] : null, ([url]) => fetcher(url), {
     revalidateOnFocus: true
   });
 
@@ -65,11 +65,7 @@ export default function MoodTracker({ user }: { user: string }) {
       await fetch("/api/mood", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mood: mood.id,
-          label: mood.label,
-          user: user
-        }),
+        body: JSON.stringify({ mood: mood.id, label: mood.label, user: user }),
       });
       await mutate();
     } catch {
@@ -80,86 +76,104 @@ export default function MoodTracker({ user }: { user: string }) {
   };
 
   return (
-    <div className="flex flex-col gap-10 w-full max-w-md mx-auto p-6 pb-32">
+    <div className="flex flex-col gap-12 py-10 pb-32 max-w-lg mx-auto">
+      {/* Partner Status Card */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-10 rounded-[3rem] border-b-8 border-pink-400/20 text-center space-y-6 shadow-2xl relative overflow-hidden group"
+        className="glass-card p-12 rounded-[4rem] border-b-[12px] border-pink-100/50 text-center space-y-8 shadow-[0_40px_80px_rgba(224,169,165,0.15)] relative overflow-hidden group"
       >
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-pink-400/30 to-transparent" />
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-pink-200/40 to-transparent" />
         
-        <div className="space-y-1">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-400/60 leading-none">
-            {partnerName}&apos;s Status
-          </p>
-          <h3 className="text-sm font-bold text-gray-400 capitalize">Today&apos;s Feeling</h3>
+        <div className="space-y-2">
+          <div className="flex items-center justify-center gap-2">
+            <Sparkles size={14} className="text-pink-300" />
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-400/60 leading-none">
+              {partnerName}&apos;s Vibe
+            </p>
+            <Sparkles size={14} className="text-pink-300" />
+          </div>
+          <h3 className="text-sm font-bold text-gray-400 capitalize italic">How they feel today</h3>
         </div>
 
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-6">
           {isLoading ? (
-            <div className="h-32 flex items-center justify-center">
-              <div className="w-12 h-12 border-4 border-pink-100 border-t-pink-400 rounded-full animate-spin" />
+            <div className="h-40 flex items-center justify-center">
+              <div className="w-16 h-16 border-4 border-pink-50 border-t-pink-300 rounded-full animate-spin" />
             </div>
           ) : partnerMoodToday ? (
             <motion.div 
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              className="flex flex-col items-center gap-3"
+              className="flex flex-col items-center gap-4"
             >
-              <div className="w-28 h-28 bg-gradient-to-br from-pink-50 to-white rounded-[2.5rem] flex items-center justify-center text-6xl shadow-xl ring-8 ring-pink-50/50 animate-float">
+              <div className="w-36 h-36 bg-gradient-to-br from-white to-pink-50 rounded-[3.5rem] flex items-center justify-center text-7xl shadow-[0_20px_40px_rgba(224,169,165,0.2)] ring-[16px] ring-pink-50/30 animate-float border border-white">
                 {moods.find(m => m.id === partnerMoodToday.mood)?.heart || '✨'}
               </div>
-              <p className="text-2xl font-black text-gradient uppercase tracking-tighter">
+              <p className="text-3xl font-black text-gradient uppercase tracking-tighter italic">
                 {partnerMoodToday.label}
               </p>
             </motion.div>
           ) : (
-            <div className="h-32 flex flex-col items-center justify-center opacity-30 gap-3 italic">
-              <Coffee size={40} className="animate-pulse" />
-              <p className="tracking-tighter font-medium">Waiting for {partnerName}...</p>
+            <div className="h-40 flex flex-col items-center justify-center opacity-20 gap-4 italic grayscale">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center">
+                <Coffee size={40} className="animate-pulse" />
+              </div>
+              <p className="tracking-tighter font-bold uppercase text-xs">Waiting for {partnerName}...</p>
             </div>
           )}
         </div>
       </motion.div>
 
-      <div className="text-center space-y-3">
-        <h2 className="text-4xl font-black tracking-tight text-gray-800">Your Vibe</h2>
-        <div className="h-px w-12 bg-pink-200 mx-auto" />
+      <div className="text-center space-y-4">
+        <h2 className="text-5xl font-black tracking-tighter text-gray-800">Your Turn</h2>
+        <div className="flex justify-center gap-1">
+          <div className="w-8 h-1 bg-pink-200 rounded-full" />
+          <div className="w-2 h-1 bg-pink-100 rounded-full" />
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
         {isLoading ? (
-          <motion.div key="loading" className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-28 bg-gray-100/50 rounded-[2rem] animate-pulse" />
+              <div key={i} className="h-32 bg-gray-100/50 rounded-[2.5rem] animate-pulse" />
             ))}
-          </motion.div>
+          </div>
         ) : alreadySetToday ? (
           <motion.div
             key="completed"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-12 rounded-[3.5rem] text-center space-y-8 bg-gradient-to-br from-white to-pink-50/20 shadow-xl border-t-4 border-white"
+            className="glass-card p-14 rounded-[4.5rem] text-center space-y-10 bg-gradient-to-br from-white via-white to-pink-50/30 shadow-2xl border-t-8 border-white"
           >
-            <div className="relative mx-auto w-28 h-28">
-              <div className="absolute inset-0 bg-pink-400/10 rounded-full blur-2xl animate-pulse" />
-              <div className="relative w-full h-full bg-white rounded-full flex items-center justify-center text-6xl shadow-2xl ring-4 ring-white transition-transform hover:scale-110 duration-500 cursor-default">
+            <div className="relative mx-auto w-32 h-32">
+              <div className="absolute inset-0 bg-pink-400/20 rounded-full blur-[40px] animate-pulse" />
+              <div className="relative w-full h-full bg-white rounded-full flex items-center justify-center text-7xl shadow-[0_25px_50px_rgba(0,0,0,0.1)] ring-8 ring-white transition-transform hover:scale-110 duration-700 cursor-default">
                 {moods.find(m => m.id === selectedMood)?.heart || '❤️'}
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-green-400 rounded-full border-4 border-white flex items-center justify-center text-white shadow-lg">
+                <Star size={16} fill="currentColor" />
               </div>
             </div>
             
-            <div className="space-y-2">
-              <h3 className="text-2xl font-black text-gray-800 uppercase tracking-tight italic text-center">
-                You are feeling <span className="text-pink-500">{selectedMood}</span>
+            <div className="space-y-4">
+              <h3 className="text-3xl font-black text-gray-800 uppercase tracking-tighter leading-tight italic">
+                Today, you feel <br/><span className="text-gradient drop-shadow-sm">{selectedMood}</span>
               </h3>
-              <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-4 py-2 bg-gray-50 rounded-full inline-block">
-                Shared with {partnerName} Today
-              </p>
+              <div className="inline-flex items-center gap-3 px-6 py-3 bg-pink-50 rounded-full border border-pink-100 border-dashed">
+                <div className="w-1.5 h-1.5 bg-pink-400 rounded-full animate-ping" />
+                <p className="text-[10px] font-black text-pink-400 uppercase tracking-[0.2em]">
+                  Shared with {partnerName}
+                </p>
+              </div>
             </div>
 
-            <div className="pt-6 border-t border-gray-100 flex flex-col items-center gap-3">
-              <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest italic">One vibe per day ❤️ Come back tomorrow!</p>
-              <Heart className="text-pink-400 animate-pulse fill-pink-400" size={24} />
+            <div className="pt-8 border-t border-gray-100 flex flex-col items-center gap-4">
+              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest italic opacity-60 px-6 text-center leading-relaxed">
+                One sweet selection per day. <br/>See you tomorrow, love!
+              </p>
+              <Heart className="text-pink-200" size={20} fill="currentColor" />
             </div>
           </motion.div>
         ) : (
@@ -167,30 +181,33 @@ export default function MoodTracker({ user }: { user: string }) {
             key="selector"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="grid grid-cols-3 gap-4"
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="grid grid-cols-3 gap-6"
           >
-            {moods.map((mood) => {
+            {moods.map((mood, i) => {
               const Icon = mood.icon;
               const isActive = selectedMood === mood.id;
               
               return (
                 <motion.button
                   key={mood.id}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  whileHover={{ scale: 1.08, y: -8 }}
+                  whileTap={{ scale: 0.92 }}
                   onClick={() => handleMoodSelect(mood)}
                   disabled={isSaving}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-3 p-6 rounded-[2.5rem] transition-all duration-300 shadow-sm",
-                    isActive ? cn(mood.color, "shadow-xl ring-4 ring-white scale-110 z-10") : "bg-white/60 backdrop-blur-md border border-white hover:bg-white hover:shadow-lg",
+                    "flex flex-col items-center justify-center gap-4 p-8 rounded-[3rem] transition-all duration-500 shadow-sm border-2",
+                    isActive ? cn(mood.color, "shadow-2xl ring-8 ring-white scale-110 z-10 border-transparent") : "bg-white/70 backdrop-blur-md border-white/40 hover:bg-white hover:shadow-2xl hover:border-[var(--color-accent)]",
                     isSaving && "opacity-50 cursor-wait"
                   )}
                 >
-                  <div className="p-3 bg-white/50 rounded-2xl shadow-inner">
-                    <Icon size={32} />
+                  <div className="p-4 bg-white/80 rounded-[1.5rem] shadow-inner border border-white/50 text-gray-500 group-hover:text-pink-500 transition-colors">
+                    <Icon size={36} strokeWidth={1.5} />
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest">{mood.label}</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">{mood.label}</span>
                 </motion.button>
               );
             })}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Sparkles, Heart } from "lucide-react";
+import { Send, Heart, MessageSquare, Lock, Sparkles, SendHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
 
@@ -13,29 +13,32 @@ interface Message {
   sender: string;
   content: string;
   createdAt: string;
+  unlockAt?: string;
 }
 
 export default function SurpriseMessage({ user }: { user: string }) {
-  const { data, error, mutate } = useSWR("/api/messages", fetcher);
-
-  const [showForm, setShowForm] = useState(false);
-  const [newMsg, setNewMsg] = useState("");
+  const { data, mutate } = useSWR("/api/messages", fetcher);
+  const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
 
   const messages: Message[] = Array.isArray(data) ? data : [];
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!content.trim()) return;
+
     setIsSending(true);
     try {
       await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sender: user, content: newMsg }),
+        body: JSON.stringify({
+          sender: user,
+          content: content,
+        }),
       });
-      setNewMsg("");
-      setShowForm(false);
-      mutate(); // Instant update
+      setContent("");
+      mutate();
     } catch {
       console.error("Failed to send");
     } finally {
@@ -43,106 +46,113 @@ export default function SurpriseMessage({ user }: { user: string }) {
     }
   };
 
-  const isLoading = !data && !error;
-
-  if (isLoading) return <div className="text-center py-20 opacity-50">Opening our surprise boxes...</div>;
+  const partnerName = user === "tushig" ? "Anujin" : "Tushig";
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-2xl mx-auto p-6 pb-32">
-      <div className="text-center space-y-2">
-        <h2 className="text-4xl font-bold text-gradient">Love Letters</h2>
-        <p className="text-sm text-[var(--color-secondary)]/60 italic">Little sparks from the heart</p>
+    <div className="flex flex-col gap-12 py-10 pb-32 max-w-2xl mx-auto">
+      {/* Hero Header */}
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center gap-2 px-6 py-2 bg-pink-50 rounded-full border border-pink-100 mb-2">
+          <Sparkles size={14} className="text-pink-400" />
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-400">Heart to Heart</span>
+        </div>
+        <h2 className="text-5xl font-black text-gray-800 tracking-tighter italic">Whispers of <span className="text-gradient">Love</span></h2>
+        <p className="text-sm text-gray-400 font-medium tracking-tight">Send a surprise message for {partnerName} to find.</p>
       </div>
 
-      <div className="space-y-12 relative before:absolute before:left-1/2 before:top-0 before:bottom-0 before:w-px before:bg-gradient-to-b before:from-pink-100 before:via-pink-200 before:to-transparent">
-        <AnimatePresence>
-          {messages.map((msg: Message, index) => {
-            const isMe = msg.sender === user;
-            const dateStr = new Date(msg.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-            
-            return (
+      {/* Message Composer */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-card p-10 rounded-[4rem] shadow-[0_40px_100px_rgba(224,169,165,0.2)] bg-gradient-to-br from-white to-pink-50/20 border-b-[12px] border-pink-50"
+      >
+        <form onSubmit={handleSend} className="space-y-8">
+          <div className="relative">
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder={`Write your precious words for ${partnerName}...`}
+              className="w-full p-8 bg-white/40 border border-white/60 rounded-[2.5rem] outline-none focus:bg-white focus:shadow-2xl transition-all min-h-[160px] text-xl leading-relaxed placeholder:text-gray-200"
+              required
+            />
+            <div className="absolute bottom-6 right-6 flex items-center gap-2 opacity-50 grayscale">
+               <Heart size={16} className="text-pink-400" fill="currentColor" />
+               <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">Sealed with love</span>
+            </div>
+          </div>
+          
+          <button
+            type="submit"
+            disabled={isSending || !content.trim()}
+            className="w-full py-6 bg-gradient-to-br from-[var(--color-primary)] to-[#c68b87] text-white rounded-[2.5rem] font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-pink-100 flex items-center justify-center gap-3 active:scale-95 transition-all disabled:opacity-50"
+          >
+            {isSending ? "Whispering..." : (
+              <>
+                Send to {partnerName} <SendHorizontal size={18} />
+              </>
+            )}
+          </button>
+        </form>
+      </motion.div>
+
+      {/* Inbox / History */}
+      <div className="space-y-8">
+        <div className="flex items-center gap-4 px-4">
+          <h3 className="text-xl font-black text-gray-800 uppercase tracking-widest">Recent Notes</h3>
+          <div className="h-px flex-1 bg-gradient-to-r from-gray-100 to-transparent" />
+        </div>
+
+        <div className="space-y-6">
+          {messages.length === 0 ? (
+            <div className="py-20 text-center space-y-6 opacity-20 italic grayscale">
+              <MessageSquare size={64} className="mx-auto" />
+              <p className="text-xl font-medium tracking-tight">Silence is beautiful, but words are magical. <br/>Start the conversation...</p>
+            </div>
+          ) : (
+            messages.map((msg, index) => (
               <motion.div
-                layout
                 key={msg._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: msg.sender === user ? 20 : -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className={cn(
-                  "relative flex items-center justify-between gap-8",
-                  isMe ? "flex-row-reverse" : "flex-row"
+                  "flex flex-col gap-2",
+                  msg.sender === user ? "items-end" : "items-start px-2"
                 )}
               >
-                {/* Timeline Dot & Date Label */}
-                <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 z-10 transition-transform hover:scale-125">
-                  <div className="w-4 h-4 rounded-full bg-white border-4 border-pink-400 shadow-sm" />
-                  <span className="whitespace-nowrap bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter text-pink-400 border border-pink-100 shadow-sm">
-                    {dateStr}
-                  </span>
-                </div>
-
-                {/* Message Bubble */}
                 <div className={cn(
-                  "w-[42%] glass-card p-6 rounded-[2rem] relative shadow-lg hover:shadow-2xl transition-all duration-500",
-                  isMe ? "border-l-4 border-gray-200" : "border-r-4 border-pink-400 bg-gradient-to-br from-pink-50/20 to-white"
+                  "max-w-[85%] p-8 rounded-[3rem] shadow-sm relative group transition-all duration-500 hover:shadow-2xl",
+                  msg.sender === user 
+                    ? "bg-white border-2 border-pink-50 text-gray-600 rounded-tr-none" 
+                    : "bg-gradient-to-br from-[var(--color-primary)] to-[#c68b87] text-white rounded-tl-none"
                 )}>
-                  {!isMe && (
-                    <div className="absolute -top-3 -right-3 bg-pink-500 text-white p-2 rounded-xl shadow-lg ring-4 ring-white animate-pulse">
-                      <Heart size={14} fill="currentColor" />
+                  {msg.sender !== user && (
+                    <div className="absolute -top-3 -left-3 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg text-pink-500 border-2 border-pink-100">
+                      <Heart size={18} fill="currentColor" />
                     </div>
                   )}
-                  <p className="text-sm font-serif italic text-[var(--color-secondary)]/90 leading-relaxed mb-4 text-left">
+                  
+                  <p className="text-lg leading-relaxed font-serif italic">
                     &quot;{msg.content}&quot;
                   </p>
-                  <div className="flex items-center gap-2 pt-2 border-t border-gray-100/50">
-                    <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[8px] font-black uppercase shadow-inner">
-                      {msg.sender[0]}
-                    </div>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{msg.sender}</span>
+                  
+                  <div className={cn(
+                    "mt-4 pt-4 border-t flex items-center justify-between gap-4",
+                    msg.sender === user ? "border-pink-50/50" : "border-white/10"
+                  )}>
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] opacity-40">
+                      {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                      {msg.sender === user ? "You sent this" : `From ${msg.sender}`}
+                    </span>
                   </div>
                 </div>
-                
-                {/* Empty spacer for the other side of timeline */}
-                <div className="w-[42%]" />
               </motion.div>
-            );
-          })}
-        </AnimatePresence>
+            ))
+          )}
+        </div>
       </div>
-
-      {showForm ? (
-        <motion.form 
-          initial={{ opacity: 0, scale: 0.9 }} 
-          animate={{ opacity: 1, scale: 1 }}
-          onSubmit={handleSend} 
-          className="glass-card p-8 rounded-[3rem] shadow-2xl space-y-6"
-        >
-          <h3 className="text-xl font-bold flex items-center gap-2">
-            <Sparkles size={20} className="text-pink-400" />
-            Write a Surprise
-          </h3>
-          <textarea
-            placeholder="Type your heart out..."
-            value={newMsg}
-            onChange={e => setNewMsg(e.target.value)}
-            className="w-full p-6 bg-white/50 border border-white/40 rounded-3xl outline-none h-40 text-lg shadow-inner"
-            required
-          />
-          <div className="flex gap-4">
-            <button type="button" onClick={() => setShowForm(false)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-bold">Cancel</button>
-            <button type="submit" disabled={isSending} className="flex-1 py-4 bg-[var(--color-secondary)] text-white rounded-2xl font-bold shadow-lg shadow-pink-200 disabled:opacity-50">
-              {isSending ? "Sending..." : "Send Surprise"}
-            </button>
-          </div>
-        </motion.form>
-      ) : (
-        <button 
-          onClick={() => setShowForm(true)}
-          className="fixed bottom-32 left-1/2 -translate-x-1/2 flex items-center gap-3 px-8 py-5 rounded-full bg-white border-2 border-[var(--color-primary)] text-[var(--color-primary)] font-black uppercase tracking-widest shadow-2xl hover:bg-[var(--color-primary)] hover:text-white transition-all duration-300 z-50 group hover:scale-110 active:scale-95"
-        >
-          <Mail size={20} className="group-hover:rotate-12 transition-transform" />
-          <span>Surprise {user === 'tushig' ? 'Anujin' : 'Tushig'}</span>
-        </button>
-      )}
     </div>
   );
 }

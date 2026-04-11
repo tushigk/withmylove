@@ -1,57 +1,65 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Outfit", "Inter", ui-sans-serif, system-ui, sans-serif;
-  
-  --color-primary: #E0A9A5;
-  --color-secondary: #4A2C40;
-  --color-accent: #D4C1EC;
-  --color-pearl: #F9F7F2;
-  --color-rose: #FF8E9E;
-  
-  --radius-xl: 1.5rem;
-  --radius-2xl: 2rem;
+  --color-primary: #e0a9a5;      /* Dusty Rose */
+  --color-secondary: #4a4a4a;    /* Charcoal */
+  --color-accent: #f8e1df;       /* Soft Shell */
+  --color-highlight: #d4af37;    /* Elegant Gold */
+  --color-bg: #fffbfb;          /* Soft Creamy White */
 }
 
 @layer base {
   body {
-    @apply bg-[var(--color-pearl)] text-[var(--color-secondary)] antialiased;
-    background-image: 
-      radial-gradient(circle at 10% 20%, rgba(224, 169, 165, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 90% 80%, rgba(212, 193, 236, 0.15) 0%, transparent 40%);
-    min-height: 100vh;
+    @apply bg-[var(--color-bg)] text-[var(--color-secondary)] selection:bg-[var(--color-primary)] selection:text-white;
+    font-family: var(--font-inter), sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-outfit), sans-serif;
+    @apply tracking-tighter;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl;
+    @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_20px_50px_rgba(224,169,165,0.1)];
   }
-  
+
   .glass-button {
-    @apply bg-white/60 backdrop-blur-md border border-white/40 hover:bg-white/80 transition-all duration-300;
+    @apply bg-white/40 backdrop-blur-md border border-white/50 shadow-sm transition-all duration-300;
   }
-  
+
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-linear-to-r from-[var(--color-secondary)] to-[var(--color-primary)];
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-[#e0a9a5] via-[#c68b87] to-[#8d6260];
+  }
+
+  .btn-primary {
+    @apply px-8 py-4 bg-gradient-to-br from-[var(--color-primary)] to-[#c68b87] text-white rounded-[2rem] font-bold shadow-xl hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all;
   }
 }
 
+/* Custom Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Premium Floating Animation */
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
 }
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
 
-@keyframes heart-beat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-.animate-heart {
-  animation: heart-beat 1.5s ease-in-out infinite;
+/* Atmospheric Gradients */
+.bg-mesh {
+  background: 
+    radial-gradient(at 0% 0%, rgba(224, 169, 165, 0.15) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(248, 225, 223, 0.2) 0, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.05) 0, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(224, 169, 165, 0.1) 0, transparent 50%);
 }
