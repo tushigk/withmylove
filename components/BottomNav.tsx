@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, BookHeart, MessageCircleHeart, Calendar, Smile } from "lucide-react";
+import { Heart, BookHeart, MessageCircleHeart, Calendar, Smile, Image as ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItemProps {
@@ -36,7 +36,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md glass-card rounded-3xl py-4 px-8 flex justify-between items-center z-50">
+    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-md glass-card rounded-3xl py-4 px-4 flex justify-between items-center z-50">
       <NavItem 
         icon={Heart} 
         label="Home" 
@@ -54,6 +54,12 @@ export default function BottomNav() {
         label="Mood" 
         href="/mood"
         isActive={pathname === '/mood'} 
+      />
+      <NavItem 
+        icon={ImageIcon} 
+        label="Album" 
+        href="/album"
+        isActive={pathname === '/album'} 
       />
       <NavItem 
         icon={MessageCircleHeart} 

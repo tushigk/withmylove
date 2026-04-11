@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion as m } from "framer-motion";
-import { Heart, Sparkles, MapPin, Calendar, ArrowRight } from "lucide-react";
+import { Heart, Sparkles, MapPin, Calendar, ArrowRight, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -121,29 +121,32 @@ export default function Home() {
         {[
           {
             icon: Sparkles,
-            label: "Our Time",
-            value: `${timeSince.days}d ${String(timeSince.hours).padStart(2, '0')}:${String(timeSince.minutes).padStart(2, '0')}:${String(timeSince.seconds).padStart(2, '0')}`,
+            label: "Time",
+            value: `${timeSince.days}d ${String(timeSince.hours).padStart(2, '0')}:${String(timeSince.minutes).padStart(2, '0')}`,
             color: "text-amber-500",
             bg: "bg-amber-100",
-            smallText: true
+            smallText: true,
+            href: "/"
           },
-          { icon: Calendar, label: "Upcoming", value: `${daysUntil} Days`, color: "text-blue-500", bg: "bg-blue-100" }
+          { icon: Calendar, label: "Upcoming", value: `${daysUntil} Days`, color: "text-blue-500", bg: "bg-blue-100", href: "/dates" },
+          { icon: ImageIcon, label: "Gallery", value: "Our Album", color: "text-purple-500", bg: "bg-purple-100", href: "/album" }
         ].map((item, i) => (
-          <m.div
-            key={i}
-            whileHover={{ y: -5 }}
-            className="glass-card p-6 rounded-[3rem] flex flex-col items-center gap-3 text-center group"
-          >
-            <div className={cn("w-14 h-14 rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500", item.bg, item.color)}>
-              <item.icon size={28} />
-            </div>
-            <div>
-              <p className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em] mb-1">{item.label}</p>
-              <span className={cn("font-black text-gray-800 tracking-tighter leading-none block", i === 0 ? "text-lg" : "text-xl")}>
-                {item.value}
-              </span>
-            </div>
-          </m.div>
+          <Link href={item.href} key={i} className={cn(i === 2 ? "col-span-2" : "col-span-1")}>
+            <m.div
+              whileHover={{ y: -5 }}
+              className="glass-card p-6 h-full rounded-[3rem] flex flex-col items-center justify-center gap-3 text-center group"
+            >
+              <div className={cn("w-14 h-14 rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500", item.bg, item.color)}>
+                <item.icon size={28} />
+              </div>
+              <div>
+                <p className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em] mb-1">{item.label}</p>
+                <span className={cn("font-black text-gray-800 tracking-tighter leading-none block", "text-xl")}>
+                  {item.value}
+                </span>
+              </div>
+            </m.div>
+          </Link>
         ))}
 
       </section>

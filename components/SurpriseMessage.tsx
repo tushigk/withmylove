@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Send, Heart, MessageSquare, Lock, Sparkles, SendHorizontal } from "lucide-react";
+import { motion } from "framer-motion";
+import { Heart, MessageSquare, Sparkles, SendHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
 

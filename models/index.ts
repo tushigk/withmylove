@@ -35,13 +35,20 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
 });
 
-// Force remove Mood model if it exists to refresh schema in development
-if (models.Mood) {
-  delete models.Mood;
-}
+const PhotoSchema = new Schema({
+  url: { type: String, required: true },
+  caption: { type: String },
+  uploader: { type: String, required: true },
+  date: { type: Date, default: Date.now }
+}, { timestamps: true });
+
+// Force remove models if they exist to refresh schema in development
+if (models.Mood) delete models.Mood;
+if (models.Photo) delete models.Photo;
 
 export const Journal = models.Journal || model("Journal", JournalSchema);
 export const Mood = model("Mood", MoodSchema);
 export const Message = models.Message || model("Message", MessageSchema);
 export const Reminder = models.Reminder || model("Reminder", ReminderSchema);
 export const User = models.User || model("User", UserSchema);
+export const Photo = model("Photo", PhotoSchema);
