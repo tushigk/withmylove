@@ -1,63 +1,130 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Heart, Sparkles } from "lucide-react";
+import { motion as m } from "framer-motion";
+import { Heart, Sparkles, MapPin, Calendar, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
-  const startDate = new Date("2026-03-07");
   const today = new Date();
+  const startDate = new Date("2026-03-07");
+  const targetDate = new Date("2026-08-06");
   const togetherDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  const daysUntil = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
   return (
-    <div className="flex flex-col gap-10 py-10">
-      {/* Couple Image Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="relative aspect-square w-full max-w-sm mx-auto rounded-[3rem] overflow-hidden shadow-2xl group"
+    <div className="flex flex-col gap-12 py-12">
+      {/* Hero Section */}
+      <section className="relative">
+        <m.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative aspect-[4/5] w-full max-w-sm mx-auto rounded-[4rem] overflow-hidden shadow-[0_40px_100px_rgba(224,169,165,0.3)] group"
+        >
+          <Image
+            src="/couple_moment.jpg"
+            alt="Our Moment"
+            fill
+            className="object-cover transition-transform duration-1000 group-hover:scale-110"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+          <div className="absolute bottom-10 left-10 right-10 space-y-4">
+            <m.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-2 text-white/70 text-[10px] font-black uppercase tracking-[0.3em]"
+            >
+              <MapPin size={12} className="text-[var(--color-primary)]" />
+              <span>Our Secret Paradise</span>
+            </m.div>
+            <h3 className="text-4xl font-black text-white leading-tight">Every moment is a <span className="text-[var(--color-primary)]">treasure</span>.</h3>
+
+            <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Since</span>
+                <span className="text-sm font-bold text-white">Mar 7, 2026</span>
+              </div>
+              <div className="h-8 w-px bg-white/10" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Status</span>
+                <span className="text-sm font-bold text-pink-400 flex items-center gap-1">Madly in love <Heart size={12} fill="currentColor" /></span>
+              </div>
+            </div>
+          </div>
+        </m.div>
+
+        {/* Floating Together Count */}
+        <m.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", delay: 0.6 }}
+          className="absolute -top-6 -right-2 md:right-[20%] w-32 h-32 bg-white rounded-[2.5rem] shadow-2xl flex flex-col items-center justify-center border-4 border-[var(--color-accent)] animate-float"
+        >
+          <span className="text-4xl font-black text-gradient leading-none">{togetherDays}</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">Days</span>
+        </m.div>
+      </section>
+
+      {/* Quick Access Grid */}
+      <section className="grid grid-cols-2 gap-6">
+        <Link href="/journal" className="col-span-2">
+          <m.div
+            whileHover={{ y: -5 }}
+            className="glass-card p-8 rounded-[3rem] flex items-center justify-between group cursor-pointer overflow-hidden relative"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--color-primary)]/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-[var(--color-primary)]/10 transition-colors" />
+            <div className="flex items-center gap-6 relative z-10">
+              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center text-pink-500 group-hover:scale-110 transition-transform duration-500">
+                <Heart size={32} fill="currentColor" />
+              </div>
+              <div>
+                <h4 className="text-xl font-black text-gray-800">New Memory</h4>
+                <p className="text-sm text-gray-400 font-medium tracking-tight">Write something sweet today...</p>
+              </div>
+            </div>
+            <ArrowRight className="text-gray-300 group-hover:text-pink-400 group-hover:translate-x-2 transition-all" size={24} />
+          </m.div>
+        </Link>
+
+        {[
+          { icon: Sparkles, label: "Sparks", value: "42", color: "text-amber-500", bg: "bg-amber-100" },
+          { icon: Calendar, label: "Upcoming", value: `${daysUntil} Days`, color: "text-blue-500", bg: "bg-blue-100" }
+        ].map((item, i) => (
+          <m.div
+            key={i}
+            whileHover={{ y: -5 }}
+            className="glass-card p-8 rounded-[3rem] flex flex-col items-center gap-4 text-center group"
+          >
+            <div className={cn("w-16 h-16 rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500", item.bg, item.color)}>
+              <item.icon size={32} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-1">{item.label}</p>
+              <span className="text-2xl font-black text-gray-800 tracking-tighter">{item.value}</span>
+            </div>
+          </m.div>
+        ))}
+      </section>
+
+      {/* Quote Section */}
+      <m.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        className="text-center space-y-4 px-8"
       >
-        <Image
-          src="/couple_moment.png"
-          alt="Our Moment"
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end">
-          <div className="text-white">
-            <h3 className="text-3xl font-bold">Forever Together</h3>
-            <p className="text-sm opacity-80 flex items-center gap-1"><Sparkles size={14} /> Since Mar 7, 2024</p>
-          </div>
-          <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center border border-white/30 text-white shadow-lg">
-            <span className="text-[10px] font-bold uppercase tracking-tighter opacity-70 leading-none mb-1">Days</span>
-            <span className="text-2xl font-black leading-none">{togetherDays}</span>
-          </div>
+        <div className="flex justify-center gap-1">
+          {[1, 2, 3].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-pink-200" />)}
         </div>
-      </motion.div>
-
-      {/* Stats/Quick Actions */}
-      <div className="grid grid-cols-2 gap-4 max-w-md mx-auto w-full">
-        <div className="glass-card p-6 rounded-[2.5rem] flex flex-col items-center gap-2 aspect-square justify-center text-center">
-          <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-pink-500 mb-2">
-            <Heart size={24} fill="currentColor" />
-          </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-none">Photos Shared</p>
-          <span className="text-2xl font-black">1,248</span>
-        </div>
-        <div className="glass-card p-6 rounded-[2.5rem] flex flex-col items-center gap-2 aspect-square justify-center text-center">
-          <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-500 mb-2">
-            <Sparkles size={24} />
-          </div>
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest leading-none">Sweet Sparks</p>
-          <span className="text-2xl font-black">42</span>
-        </div>
-      </div>
-
-      <div className="text-center italic text-[var(--color-secondary)]/50 font-serif text-lg">
-        &quot;You&apos;re the peace I&apos;ve been searching for.&quot;
-      </div>
+        <p className="text-2xl font-serif italic text-gray-400 leading-relaxed">
+          &quot;In your arms, I found the home I never knew I was missing.&quot;
+        </p>
+        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-pink-300">— Forever Yours</p>
+      </m.div>
     </div>
   );
 }
+
+import { cn } from "@/lib/utils";
