@@ -24,7 +24,11 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ error: "Invalid username or password" }, { status: 401 });
-  } catch {
-    return NextResponse.json({ error: "Login failed" }, { status: 500 });
+  } catch (err: any) {
+    console.error("Login Error:", err);
+    return NextResponse.json({ 
+      error: "Login failed", 
+      details: err.message 
+    }, { status: 500 });
   }
 }
