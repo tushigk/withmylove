@@ -4,35 +4,41 @@ import Image from "next/image";
 import { motion as m } from "framer-motion";
 import { Heart, Sparkles, MapPin, Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import useSWR from "swr";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+
+const START_DATE = new Date("2026-03-07T00:00:00");
+const TARGET_DATE = new Date("2026-08-06");
 
 export default function Home() {
+  const [timeSince, setTimeSince] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const updateTimer = () => {
+      const now = new Date();
+      const diff = now.getTime() - START_DATE.getTime();
+
+      if (diff < 0) {
+        setTimeSince({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      setTimeSince({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((diff % (1000 * 60)) / 1000),
+      });
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const today = new Date();
-  const startDate = new Date("2026-03-07T00:00:00");
-  const targetDate = new Date("2026-08-06");
-
-  const { data: timeSince } = useSWR('timer', () => {
-    const now = new Date();
-    const diff = now.getTime() - startDate.getTime();
-
-    if (diff < 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-    return { days, hours, minutes, seconds };
-  }, {
-    refreshInterval: 1000,
-    fallbackData: { days: 0, hours: 0, minutes: 0, seconds: 0 },
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false
-  });
-
-
-  const togetherDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-  const daysUntil = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const togetherDays = Math.floor((today.getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24));
+  const daysUntil = Math.ceil((TARGET_DATE.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
 
   return (
