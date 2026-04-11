@@ -4,13 +4,36 @@ import Image from "next/image";
 import { motion as m } from "framer-motion";
 import { Heart, Sparkles, MapPin, Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import useSWR from "swr";
 
 export default function Home() {
   const today = new Date();
-  const startDate = new Date("2026-03-07");
+  const startDate = new Date("2026-03-07T00:00:00");
   const targetDate = new Date("2026-08-06");
+
+  const { data: timeSince } = useSWR('timer', () => {
+    const now = new Date();
+    const diff = now.getTime() - startDate.getTime();
+
+    if (diff < 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    return { days, hours, minutes, seconds };
+  }, {
+    refreshInterval: 1000,
+    fallbackData: { days: 0, hours: 0, minutes: 0, seconds: 0 },
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false
+  });
+
+
   const togetherDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
   const daysUntil = Math.ceil((targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
 
   return (
     <div className="flex flex-col gap-12 py-12">
@@ -90,23 +113,33 @@ export default function Home() {
         </Link>
 
         {[
-          { icon: Sparkles, label: "Sparks", value: "42", color: "text-amber-500", bg: "bg-amber-100" },
+          {
+            icon: Sparkles,
+            label: "Our Time",
+            value: `${timeSince.days}d ${String(timeSince.hours).padStart(2, '0')}:${String(timeSince.minutes).padStart(2, '0')}:${String(timeSince.seconds).padStart(2, '0')}`,
+            color: "text-amber-500",
+            bg: "bg-amber-100",
+            smallText: true
+          },
           { icon: Calendar, label: "Upcoming", value: `${daysUntil} Days`, color: "text-blue-500", bg: "bg-blue-100" }
         ].map((item, i) => (
           <m.div
             key={i}
             whileHover={{ y: -5 }}
-            className="glass-card p-8 rounded-[3rem] flex flex-col items-center gap-4 text-center group"
+            className="glass-card p-6 rounded-[3rem] flex flex-col items-center gap-3 text-center group"
           >
-            <div className={cn("w-16 h-16 rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500", item.bg, item.color)}>
-              <item.icon size={32} />
+            <div className={cn("w-14 h-14 rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500", item.bg, item.color)}>
+              <item.icon size={28} />
             </div>
             <div>
-              <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em] mb-1">{item.label}</p>
-              <span className="text-2xl font-black text-gray-800 tracking-tighter">{item.value}</span>
+              <p className="text-[9px] font-black text-gray-300 uppercase tracking-[0.2em] mb-1">{item.label}</p>
+              <span className={cn("font-black text-gray-800 tracking-tighter leading-none block", i === 0 ? "text-lg" : "text-xl")}>
+                {item.value}
+              </span>
             </div>
           </m.div>
         ))}
+
       </section>
 
       {/* Quote Section */}
