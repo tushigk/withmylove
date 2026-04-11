@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import useSWR from "swr";
 import { motion as m, AnimatePresence } from "framer-motion";
-import { ImagePlus, X, Loader2, Heart } from "lucide-react";
+import { ImagePlus, X, Loader2, Heart, Trash } from "lucide-react";
 
 interface Photo {
   _id: string;
@@ -17,7 +17,15 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 export default function AlbumPage() {
   const { data: photos, mutate, isLoading } = useSWR("/api/photos", fetcher);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [dialog, setDialog] = useState<{
+    isOpen: boolean;
+    type: "alert" | "confirm";
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+  }>({ isOpen: false, type: "alert", title: "", message: "" });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,7 +33,7 @@ export default function AlbumPage() {
     if (!file) return;
 
     if (file.size > 3 * 1024 * 1024) {
-      alert("File is too large! Please select an image under 3MB.");
+      setDialog({ isOpen: true, type: "alert", title: "File Too Large", message: "Please select an image under 3MB to save space." });
       return;
     }
 
@@ -52,13 +60,14 @@ export default function AlbumPage() {
           mutate();
         } else {
           const err = await res.json();
-          alert("Upload failed: " + (err.error || "Unknown error"));
+          setDialog({ isOpen: true, type: "alert", title: "Upload Failed", message: err.error || "Unknown error occurred during upload." });
         }
         setIsUploading(false);
       };
       reader.readAsDataURL(file);
     } catch (error) {
       console.error("Error reading file:", error);
+      setDialog({ isOpen: true, type: "alert", title: "Upload Error", message: "An error occurred while reading the file." });
       setIsUploading(false);
     }
   };
@@ -152,11 +161,95 @@ export default function AlbumPage() {
               alt={selectedPhoto.caption || "View memory"}
               className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
             />
-            <div className="absolute bottom-8 text-white text-center">
-              <span className="text-sm font-medium tracking-wide uppercase bg-black/40 px-4 py-2 rounded-full backdrop-blur-md">
+            <div className="absolute bottom-8 flex flex-col items-center gap-4 w-full">
+              <span className="text-sm font-medium tracking-wide uppercase text-white bg-black/40 px-4 py-2 rounded-full backdrop-blur-md">
                 Uploaded by {selectedPhoto.uploader}
               </span>
+              
+              {typeof window !== "undefined" && localStorage.getItem("couple-user") === selectedPhoto.uploader && (
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDialog({
+                      isOpen: true,
+                      type: "confirm",
+                      title: "Delete Memory?",
+                      message: "Are you sure you want to delete this precious memory? This cannot be undone.",
+                      onConfirm: async () => {
+                        const username = localStorage.getItem("couple-user");
+                        try {
+                          setIsDeleting(true);
+                          const res = await fetch(`/api/photos?id=${selectedPhoto._id}&username=${username}`, {
+                            method: "DELETE"
+                          });
+                          if (res.ok) {
+                            mutate();
+                            setSelectedPhoto(null);
+                          } else {
+                            const err = await res.json();
+                            setDialog({ isOpen: true, type: "alert", title: "Error", message: err.error || "Failed to delete photo" });
+                          }
+                        } catch (err) {
+                          console.error("Delete Error:", err);
+                          setDialog({ isOpen: true, type: "alert", title: "Error", message: "Error deleting photo" });
+                        } finally {
+                          setIsDeleting(false);
+                        }
+                      }
+                    });
+                  }}
+                  disabled={isDeleting}
+                  className="bg-red-500/80 hover:bg-red-500 text-white text-xs uppercase tracking-widest font-black px-4 py-2 rounded-full backdrop-blur-md transition-colors flex items-center gap-2 shadow-lg disabled:opacity-50"
+                >
+                  {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash size={14} />} 
+                  {isDeleting ? "Deleting..." : "Delete Photo"}
+                </button>
+              )}
             </div>
+          </m.div>
+        )}
+      </AnimatePresence>
+
+      {/* Custom Dialog Modal */}
+      <AnimatePresence>
+        {dialog.isOpen && (
+          <m.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+          >
+            <m.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl space-y-4"
+            >
+              <h3 className="text-xl font-black text-gray-800 tracking-tight">{dialog.title}</h3>
+              <p className="text-sm font-medium text-gray-500 leading-relaxed">{dialog.message}</p>
+              
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+                  className="flex-1 py-4 rounded-[1.5rem] bg-gray-100 text-gray-600 font-bold text-xs uppercase tracking-widest hover:bg-gray-200 transition-colors"
+                >
+                  {dialog.type === "confirm" ? "Cancel" : "Okay"}
+                </button>
+                {dialog.type === "confirm" && (
+                  <button
+                    onClick={() => {
+                      setDialog(prev => ({ ...prev, isOpen: false }));
+                      dialog.onConfirm?.();
+                    }}
+                    className="flex-1 py-4 rounded-[1.5rem] bg-[var(--color-primary)] text-white font-bold text-xs uppercase tracking-widest hover:brightness-110 shadow-lg shadow-pink-200 transition-all"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            </m.div>
           </m.div>
         )}
       </AnimatePresence>

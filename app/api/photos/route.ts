@@ -36,3 +36,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to upload photo" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    await dbConnect();
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    const username = searchParams.get("username");
+
+    if (!id || !username) {
+      return NextResponse.json({ error: "Missing id or username" }, { status: 400 });
+    }
+
+    const photo = await Photo.findById(id);
+    if (!photo) {
+      return NextResponse.json({ error: "Photo not found" }, { status: 404 });
+    }
+
+    if (photo.uploader !== username) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    await Photo.findByIdAndDelete(id);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Delete error:", error);
+    return NextResponse.json({ error: "Failed to delete photo" }, { status: 500 });
+  }
+}
+

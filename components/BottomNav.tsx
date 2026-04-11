@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Heart, BookHeart, MessageCircleHeart, Calendar, Smile, Image as ImageIcon } from "lucide-react";
+import { Heart, BookHeart, MessageCircleHeart, Calendar, Smile } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItemProps {
