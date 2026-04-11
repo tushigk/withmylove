@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import useSWR from "swr";
 import { motion as m, AnimatePresence } from "framer-motion";
 import { ImagePlus, X, Loader2, Heart, Trash } from "lucide-react";
+import { createPortal } from "react-dom";
 
 interface Photo {
   _id: string;
@@ -19,6 +20,11 @@ export default function AlbumPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [dialog, setDialog] = useState<{
     isOpen: boolean;
     type: "alert" | "confirm";
@@ -136,123 +142,144 @@ export default function AlbumPage() {
         </div>
       )}
 
-      {/* Lightbox Modal */}
-      <AnimatePresence>
-        {selectedPhoto && (
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedPhoto(null)}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
-          >
-            <button 
-              onClick={(e) => { e.stopPropagation(); setSelectedPhoto(null); }}
-              className="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors"
-            >
-              <X />
-            </button>
-            <m.img
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              src={selectedPhoto.url}
-              alt={selectedPhoto.caption || "View memory"}
-              className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
-            />
-            <div className="absolute bottom-8 flex flex-col items-center gap-4 w-full">
-              <span className="text-sm font-medium tracking-wide uppercase text-white bg-black/40 px-4 py-2 rounded-full backdrop-blur-md">
-                Uploaded by {selectedPhoto.uploader}
-              </span>
-              
-              {typeof window !== "undefined" && localStorage.getItem("couple-user") === selectedPhoto.uploader && (
+      {mounted && typeof document !== "undefined" && createPortal(
+        <>
+          {/* Lightbox Modal */}
+          <AnimatePresence>
+            {selectedPhoto && (
+              <m.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedPhoto(null)}
+                className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
+              >
                 <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDialog({
-                      isOpen: true,
-                      type: "confirm",
-                      title: "Delete Memory?",
-                      message: "Are you sure you want to delete this precious memory? This cannot be undone.",
-                      onConfirm: async () => {
-                        const username = localStorage.getItem("couple-user");
-                        try {
-                          setIsDeleting(true);
-                          const res = await fetch(`/api/photos?id=${selectedPhoto._id}&username=${username}`, {
-                            method: "DELETE"
-                          });
-                          if (res.ok) {
-                            mutate();
-                            setSelectedPhoto(null);
-                          } else {
-                            const err = await res.json();
-                            setDialog({ isOpen: true, type: "alert", title: "Error", message: err.error || "Failed to delete photo" });
-                          }
-                        } catch (err) {
-                          console.error("Delete Error:", err);
-                          setDialog({ isOpen: true, type: "alert", title: "Error", message: "Error deleting photo" });
-                        } finally {
-                          setIsDeleting(false);
-                        }
-                      }
-                    });
-                  }}
-                  disabled={isDeleting}
-                  className="bg-red-500/80 hover:bg-red-500 text-white text-xs uppercase tracking-widest font-black px-4 py-2 rounded-full backdrop-blur-md transition-colors flex items-center gap-2 shadow-lg disabled:opacity-50"
+                  onClick={(e) => { e.stopPropagation(); setSelectedPhoto(null); }}
+                  className="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors"
                 >
-                  {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash size={14} />} 
-                  {isDeleting ? "Deleting..." : "Delete Photo"}
+                  <X />
                 </button>
-              )}
-            </div>
-          </m.div>
-        )}
-      </AnimatePresence>
+                <m.div
+                  initial={{ scale: 0.85, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.85, opacity: 0, y: 20 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative w-full max-w-md max-h-[90vh] flex flex-col items-center cursor-default"
+                >
+                  {/* Premium Frosted Frame */}
+                  <div className="w-full relative shadow-[0_40px_100px_rgba(224,169,165,0.4)] rounded-[3rem] p-3 bg-white/10 backdrop-blur-2xl border border-white/20">
+                    <div className="w-full rounded-[2.5rem] overflow-hidden relative flex items-center justify-center bg-black/40">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={selectedPhoto.url}
+                          alt={selectedPhoto.caption || "View memory"}
+                          className="w-full h-auto max-h-[60vh] object-contain"
+                        />
+                    </div>
+                  </div>
 
-      {/* Custom Dialog Modal */}
-      <AnimatePresence>
-        {dialog.isOpen && (
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setDialog(prev => ({ ...prev, isOpen: false }))}
-          >
-            <m.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl space-y-4"
-            >
-              <h3 className="text-xl font-black text-gray-800 tracking-tight">{dialog.title}</h3>
-              <p className="text-sm font-medium text-gray-500 leading-relaxed">{dialog.message}</p>
-              
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => setDialog(prev => ({ ...prev, isOpen: false }))}
-                  className="flex-1 py-4 rounded-[1.5rem] bg-gray-100 text-gray-600 font-bold text-xs uppercase tracking-widest hover:bg-gray-200 transition-colors"
+                  {/* Captions and Actions Below Card */}
+                  <div className="mt-8 flex flex-col items-center gap-4 w-full">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black tracking-widest uppercase text-white bg-white/15 px-6 py-3 rounded-[2rem] backdrop-blur-xl border border-white/10 shadow-xl flex items-center gap-2">
+                        <Heart className="text-pink-400" size={16} fill="currentColor" />
+                        By {selectedPhoto.uploader}
+                      </span>
+                    </div>
+                    
+                    {typeof window !== "undefined" && localStorage.getItem("couple-user") === selectedPhoto.uploader && (
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDialog({
+                            isOpen: true,
+                            type: "confirm",
+                            title: "Delete Memory?",
+                            message: "Are you sure you want to delete this precious memory? This cannot be undone.",
+                            onConfirm: async () => {
+                              const username = localStorage.getItem("couple-user");
+                              try {
+                                setIsDeleting(true);
+                                const res = await fetch(`/api/photos?id=${selectedPhoto._id}&username=${username}`, {
+                                  method: "DELETE"
+                                });
+                                if (res.ok) {
+                                  mutate();
+                                  setSelectedPhoto(null);
+                                } else {
+                                  const err = await res.json();
+                                  setDialog({ isOpen: true, type: "alert", title: "Error", message: err.error || "Failed to delete photo" });
+                                }
+                              } catch (err) {
+                                console.error("Delete Error:", err);
+                                setDialog({ isOpen: true, type: "alert", title: "Error", message: "Error deleting photo" });
+                              } finally {
+                                setIsDeleting(false);
+                              }
+                            }
+                          });
+                        }}
+                        disabled={isDeleting}
+                        className="bg-red-500/80 hover:bg-red-500 text-white text-[10px] uppercase tracking-widest font-black px-6 py-3 rounded-[2rem] backdrop-blur-xl transition-all hover:scale-105 active:scale-95 flex items-center gap-2 shadow-xl disabled:opacity-50"
+                      >
+                        {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash size={14} />} 
+                        {isDeleting ? "Deleting..." : "Delete Photo"}
+                      </button>
+                    )}
+                  </div>
+                </m.div>
+              </m.div>
+            )}
+          </AnimatePresence>
+
+          {/* Custom Dialog Modal */}
+          <AnimatePresence>
+            {dialog.isOpen && (
+              <m.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+                onClick={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+              >
+                <m.div
+                  initial={{ scale: 0.9, y: 20 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.9, y: 20 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-white rounded-[2.5rem] p-8 w-full max-w-sm shadow-2xl space-y-4"
                 >
-                  {dialog.type === "confirm" ? "Cancel" : "Okay"}
-                </button>
-                {dialog.type === "confirm" && (
-                  <button
-                    onClick={() => {
-                      setDialog(prev => ({ ...prev, isOpen: false }));
-                      dialog.onConfirm?.();
-                    }}
-                    className="flex-1 py-4 rounded-[1.5rem] bg-[var(--color-primary)] text-white font-bold text-xs uppercase tracking-widest hover:brightness-110 shadow-lg shadow-pink-200 transition-all"
-                  >
-                    Delete
-                  </button>
-                )}
-              </div>
-            </m.div>
-          </m.div>
-        )}
-      </AnimatePresence>
+                  <h3 className="text-xl font-black text-gray-800 tracking-tight">{dialog.title}</h3>
+                  <p className="text-sm font-medium text-gray-500 leading-relaxed">{dialog.message}</p>
+                  
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={() => setDialog(prev => ({ ...prev, isOpen: false }))}
+                      className="flex-1 py-4 rounded-[1.5rem] bg-gray-100 text-gray-600 font-bold text-xs uppercase tracking-widest hover:bg-gray-200 transition-colors"
+                    >
+                      {dialog.type === "confirm" ? "Cancel" : "Okay"}
+                    </button>
+                    {dialog.type === "confirm" && (
+                      <button
+                        onClick={() => {
+                          setDialog(prev => ({ ...prev, isOpen: false }));
+                          dialog.onConfirm?.();
+                        }}
+                        className="flex-1 py-4 rounded-[1.5rem] bg-[var(--color-primary)] text-white font-bold text-xs uppercase tracking-widest hover:brightness-110 shadow-lg shadow-pink-200 transition-all"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </m.div>
+              </m.div>
+            )}
+          </AnimatePresence>
+        </>,
+        document.body
+      )}
     </div>
   );
 }
