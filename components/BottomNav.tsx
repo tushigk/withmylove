@@ -37,41 +37,41 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-md glass-card rounded-3xl py-4 px-4 flex justify-between items-center z-50">
-      <NavItem 
-        icon={Heart} 
-        label="Home" 
+      <NavItem
+        icon={Heart}
+        label="Home"
         href="/"
-        isActive={pathname === '/'} 
+        isActive={pathname === '/'}
       />
-      <NavItem 
-        icon={BookHeart} 
-        label="Journal" 
+      <NavItem
+        icon={BookHeart}
+        label="Journal"
         href="/journal"
-        isActive={pathname === '/journal'} 
+        isActive={pathname === '/journal'}
       />
-      <NavItem 
-        icon={Smile} 
-        label="Mood" 
+      <NavItem
+        icon={Smile}
+        label="Mood"
         href="/mood"
-        isActive={pathname === '/mood'} 
+        isActive={pathname === '/mood'}
       />
-      <NavItem 
+      {/* <NavItem 
         icon={ImageIcon} 
         label="Album" 
         href="/album"
         isActive={pathname === '/album'} 
-      />
-      <NavItem 
-        icon={MessageCircleHeart} 
-        label="Love" 
+      /> */}
+      <NavItem
+        icon={MessageCircleHeart}
+        label="Love"
         href="/love"
-        isActive={pathname === '/love'} 
+        isActive={pathname === '/love'}
       />
-      <NavItem 
-        icon={Calendar} 
-        label="Dates" 
+      <NavItem
+        icon={Calendar}
+        label="Dates"
         href="/dates"
-        isActive={pathname === '/dates'} 
+        isActive={pathname === '/dates'}
       />
     </nav>
   );
