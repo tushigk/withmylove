@@ -7,6 +7,8 @@ import BottomNav from "@/components/BottomNav";
 import Login from "@/components/Login";
 import useSWR, { mutate as globalMutate } from "swr";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
+
 
 const subscribe = () => () => { };
 const USER_KEY = "couple-user";
@@ -46,7 +48,7 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
     <div className="relative min-h-screen pb-32 bg-mesh selection:bg-pink-100">
       {/* Header */}
       <header className="p-8 pb-4 flex justify-between items-center max-w-4xl mx-auto sticky top-0 z-[60] backdrop-blur-md bg-white/5">
-        <div className="flex items-center gap-4">
+        <Link href="/" className="flex items-center gap-4 cursor-pointer group">
           <motion.div
             whileHover={{ scale: 1.1, rotate: 15 }}
             className="w-12 h-12 bg-gradient-to-br from-[var(--color-primary)] to-[#c68b87] rounded-2xl flex items-center justify-center text-white shadow-xl shadow-pink-200/50"
@@ -54,7 +56,7 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
             <Heart size={24} fill="currentColor" />
           </motion.div>
           <div className="flex flex-col">
-            <h1 className="text-2xl font-black tracking-tighter text-gradient leading-none">OUR SPACE</h1>
+            <h1 className="text-2xl font-black tracking-tighter text-gradient leading-none group-hover:opacity-80 transition-opacity">OUR SPACE</h1>
             <div className="flex items-center gap-2 mt-1">
               <div className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none">
@@ -62,7 +64,8 @@ export default function AppWrapper({ children }: { children: React.ReactNode }) 
               </p>
             </div>
           </div>
-        </div>
+        </Link>
+
         <button onClick={handleLogout} className="p-3 cursor-pointer glass-button rounded-2xl hover:bg-white/60 text-gray-400 hover:text-pink-500 transition-colors">
           <LogOut size={20} />
         </button>
