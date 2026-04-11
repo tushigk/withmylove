@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import useSWR from "swr";
 
 const moods = [
-  { id: 'happy', icon: Smile, label: 'Happy', color: 'bg-yellow-50 text-yellow-600', heart: '❤️' },
+  { id: 'happy', icon: Smile, label: 'Happy', color: 'bg-yellow-50 text-yellow-600', heart: '😊' },
   { id: 'loved', icon: Heart, label: 'Loved', color: 'bg-pink-50 text-pink-600', heart: '💖' },
   { id: 'calm', icon: Coffee, label: 'Calm', color: 'bg-blue-50 text-blue-600', heart: '✨' },
   { id: 'energetic', icon: Sun, label: 'Energetic', color: 'bg-orange-50 text-orange-600', heart: '🔥' },
@@ -45,7 +45,7 @@ export default function MoodTracker({ user }: { user: string }) {
     );
   };
 
-  const sortedMoods = [...moodsList].sort((a, b) => 
+  const sortedMoods = [...moodsList].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
@@ -59,7 +59,7 @@ export default function MoodTracker({ user }: { user: string }) {
 
   const handleMoodSelect = async (mood: { id: string, label: string }) => {
     if (alreadySetToday || isSaving || isLoading) return;
-    
+
     setIsSaving(true);
     try {
       await fetch("/api/mood", {
@@ -78,13 +78,13 @@ export default function MoodTracker({ user }: { user: string }) {
   return (
     <div className="flex flex-col gap-12 py-10 pb-32 max-w-lg mx-auto">
       {/* Partner Status Card */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="glass-card p-12 rounded-[4rem] border-b-[12px] border-pink-100/50 text-center space-y-8 shadow-[0_40px_80px_rgba(224,169,165,0.15)] relative overflow-hidden group"
       >
         <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-transparent via-pink-200/40 to-transparent" />
-        
+
         <div className="space-y-2">
           <div className="flex items-center justify-center gap-2">
             <Sparkles size={14} className="text-pink-300" />
@@ -102,7 +102,7 @@ export default function MoodTracker({ user }: { user: string }) {
               <div className="w-16 h-16 border-4 border-pink-50 border-t-pink-300 rounded-full animate-spin" />
             </div>
           ) : partnerMoodToday ? (
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               className="flex flex-col items-center gap-4"
@@ -156,10 +156,10 @@ export default function MoodTracker({ user }: { user: string }) {
                 <Star size={16} fill="currentColor" />
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <h3 className="text-3xl font-black text-gray-800 uppercase tracking-tighter leading-tight italic">
-                Today, you feel <br/><span className="text-gradient drop-shadow-sm">{selectedMood}</span>
+                Today, you feel <br /><span className="text-gradient drop-shadow-sm">{selectedMood}</span>
               </h3>
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-pink-50 rounded-full border border-pink-100 border-dashed">
                 <div className="w-1.5 h-1.5 bg-pink-400 rounded-full animate-ping" />
@@ -171,7 +171,7 @@ export default function MoodTracker({ user }: { user: string }) {
 
             <div className="pt-8 border-t border-gray-100 flex flex-col items-center gap-4">
               <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest italic opacity-60 px-6 text-center leading-relaxed">
-                One sweet selection per day. <br/>See you tomorrow, love!
+                One sweet selection per day. <br />See you tomorrow, love!
               </p>
               <Heart className="text-pink-200" size={20} fill="currentColor" />
             </div>
@@ -187,7 +187,7 @@ export default function MoodTracker({ user }: { user: string }) {
             {moods.map((mood, i) => {
               const Icon = mood.icon;
               const isActive = selectedMood === mood.id;
-              
+
               return (
                 <motion.button
                   key={mood.id}
