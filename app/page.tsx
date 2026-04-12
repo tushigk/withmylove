@@ -51,7 +51,7 @@ export default function Home() {
           className="relative aspect-[4/5] w-full max-w-sm mx-auto rounded-[4rem] overflow-hidden shadow-[0_40px_100px_rgba(224,169,165,0.3)] group"
         >
           <Image
-            src="/couple_moment.jpg"
+            src="/couple_moment.png"
             alt="Our Moment"
             fill
             className="object-cover transition-transform duration-1000 group-hover:scale-110"
