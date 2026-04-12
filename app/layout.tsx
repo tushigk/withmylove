@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "OUR SPACE | Shared Love Journal & Mood Tracker",
+  title: "OUR SPACE",
   description: "A private, beautiful space for couples to share journals, track moods, and send surprise messages.",
 };
 
