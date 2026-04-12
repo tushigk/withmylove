@@ -122,7 +122,7 @@ export default function Home() {
           {
             icon: Sparkles,
             label: "Time",
-            value: `${timeSince.days}d ${String(timeSince.hours).padStart(2, '0')}:${String(timeSince.minutes).padStart(2, '0')}`,
+            value: `${timeSince.days}d ${String(timeSince.hours).padStart(2, '0')}:${String(timeSince.minutes).padStart(2, '0')}:${String(timeSince.seconds).padStart(2, '0')}`,
             color: "text-amber-500",
             bg: "bg-amber-100",
             smallText: true,
