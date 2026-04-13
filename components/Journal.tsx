@@ -25,10 +25,11 @@ export default function Journal({ user }: { user: string }) {
 
   const entries: JournalEntry[] = Array.isArray(data) ? data : [];
 
+
   const handleAddEntry = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newEntry.title || !newEntry.content) return;
-    
+
     setIsSaving(true);
     try {
       await fetch("/api/journal", {
@@ -52,9 +53,9 @@ export default function Journal({ user }: { user: string }) {
       <div className="flex items-center gap-4">
         <div className="flex-1 relative group">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-pink-400 transition-colors" size={20} />
-          <input 
-            type="text" 
-            placeholder="Search memories..." 
+          <input
+            type="text"
+            placeholder="Search memories..."
             className="w-full pl-14 pr-6 py-5 bg-white/50 border border-white/40 rounded-[2rem] outline-none focus:bg-white focus:shadow-2xl transition-all duration-500 placeholder:text-gray-300 font-medium"
           />
         </div>
@@ -81,7 +82,7 @@ export default function Journal({ user }: { user: string }) {
                 <h3 className="text-2xl font-black text-gray-800">New Memory</h3>
                 <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Share a piece of your heart</p>
               </div>
-              
+
               <div className="space-y-4">
                 <input
                   type="text"
@@ -138,7 +139,7 @@ export default function Journal({ user }: { user: string }) {
               className="glass-card p-10 rounded-[3.5rem] relative group hover:shadow-2xl hover:scale-[1.01] transition-all duration-700"
             >
               <div className="absolute top-10 right-10 flex gap-2">
-                <motion.button 
+                <motion.button
                   whileHover={{ scale: 1.2 }}
                   className={cn("p-3 rounded-2xl transition-colors", entry.liked ? "bg-red-50 text-red-500" : "bg-gray-50 text-gray-300 hover:text-red-400")}
                 >
@@ -155,7 +156,7 @@ export default function Journal({ user }: { user: string }) {
                     <h3 className="text-2xl font-black text-gray-800 tracking-tight group-hover:text-pink-500 transition-colors">{entry.title}</h3>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.15em] text-gray-300">
-                        <Calendar size={12} /> {new Date(entry.createdAt).toLocaleDateString()}
+                        <Calendar size={12} /> {new Date(entry.createdAt).toLocaleString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                       </span>
                       <div className="w-1 h-1 rounded-full bg-gray-200" />
                       <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.15em] text-pink-300 italic">
@@ -170,10 +171,10 @@ export default function Journal({ user }: { user: string }) {
                 </p>
 
                 <div className="pt-6 border-t border-gray-50 flex items-center justify-between">
-                   <div className="flex items-center gap-1 text-[10px] font-black text-gray-300 uppercase tracking-widest italic">
-                     <MapPin size={12} /> Captured in our hearts
-                   </div>
-                   <Star className="text-amber-200" size={16} fill="currentColor" />
+                  <div className="flex items-center gap-1 text-[10px] font-black text-gray-300 uppercase tracking-widest italic">
+                    <MapPin size={12} /> Captured in our hearts
+                  </div>
+                  <Star className="text-amber-200" size={16} fill="currentColor" />
                 </div>
               </div>
             </motion.div>
