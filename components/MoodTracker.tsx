@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Smile, Frown, Heart, Coffee, Sun, CloudRain, Star, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
+import { format } from "date-fns";
 
 const moods = [
   { id: 'happy', icon: Smile, label: 'Happy', color: 'bg-yellow-50 text-yellow-600', heart: '😊' },
@@ -214,6 +215,72 @@ export default function MoodTracker({ user }: { user: string }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Mood History Timeline */}
+      {sortedMoods.length > 0 && (
+        <div className="mt-16 relative">
+          <div className="flex flex-col items-center gap-3 mb-10">
+            <div className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-pink-50/80 backdrop-blur-sm rounded-full border border-pink-100/50 shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+              <span className="text-[10px] font-black uppercase tracking-[0.25em] text-pink-400">Time Capsule</span>
+            </div>
+            <h2 className="text-4xl font-black text-gray-800 tracking-tighter italic">Mood History</h2>
+          </div>
+
+          <div className="relative pl-[1.125rem]">
+            {/* Continuous left border line */}
+            <div className="absolute left-[1.125rem] top-6 bottom-6 w-1 -ml-[2px] bg-gradient-to-b from-pink-200 via-pink-100 to-transparent rounded-full opacity-60" />
+
+            <div className="space-y-5 relative">
+              {sortedMoods.slice(0, 30).map((entry: MoodEntry, index: number) => {
+                const moodInfo = moods.find(m => m.id === entry.mood);
+                const isMe = entry.user === user;
+                const entryDate = new Date(entry.createdAt);
+                const userName = entry.user === "tushig" ? "Tushig" : "Anujin";
+
+                return (
+                  <motion.div
+                    key={entry._id}
+                    initial={{ opacity: 0, x: -20, y: 10 }}
+                    whileInView={{ opacity: 1, x: 0, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ delay: index * 0.05, type: "spring", stiffness: 200, damping: 20 }}
+                    className="relative pl-8 group"
+                  >
+                    {/* Timeline Dot */}
+                    <div className="absolute left-[-5px] top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-[3px] border-white bg-pink-300 shadow-sm z-10 transition-transform group-hover:scale-150 duration-300" />
+
+                    <div className={cn(
+                      "glass-card p-3 pr-5 rounded-[2rem] flex items-center gap-4 bg-white/70 backdrop-blur-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-white/80 hover:shadow-[0_8px_30px_-4px_rgba(224,169,165,0.2)] hover:scale-[1.02] transition-all duration-300",
+                      isMe ? "hover:border-pink-200/50" : "hover:border-blue-200/50"
+                    )}>
+                      <div className={cn(
+                        "w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-white/50 bg-gradient-to-br from-white/60 to-transparent group-hover:rotate-12 transition-transform duration-300",
+                        moodInfo?.color?.split(" ")[1] || "text-gray-600",
+                        moodInfo?.color?.split(" ")[0] || "bg-gray-50"
+                      )}>
+                        <span className="drop-shadow-sm">{moodInfo?.heart}</span>
+                      </div>
+                      <div className="flex-1 min-w-0 py-1">
+                         <div className="flex justify-between items-start gap-2 mb-1">
+                            <h4 className="font-black text-gray-800 text-lg leading-none truncate">{moodInfo?.label || entry.label}</h4>
+                            <span className={cn(
+                              "text-[9px] uppercase tracking-widest font-black px-2.5 py-1 rounded-full shrink-0 border",
+                              isMe ? "bg-pink-50 text-pink-500 border-pink-100" : "bg-blue-50 text-blue-500 border-blue-100"
+                            )}>
+                              {userName}
+                            </span>
+                         </div>
+                         <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider opacity-80">{format(entryDate, "MMM d • h:mm a")}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
