@@ -56,12 +56,12 @@ export default function SurpriseMessage({ user }: { user: string }) {
           <Sparkles size={14} className="text-pink-400" />
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-pink-400">Heart to Heart</span>
         </div>
-        <h2 className="text-5xl font-black text-gray-800 tracking-tighter italic">Whispers of <span className="text-gradient">Love</span></h2>
+        <h2 className="text-5xl font-black text-gray-800 tracking-tighter italic">Whispers of <span className="text-gradient pr-3">Love</span></h2>
         <p className="text-sm text-gray-400 font-medium tracking-tight">Send a surprise message for {partnerName} to find.</p>
       </div>
 
       {/* Message Composer */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="glass-card p-10 rounded-[4rem] shadow-[0_40px_100px_rgba(224,169,165,0.2)] bg-gradient-to-br from-white to-pink-50/20 border-b-[12px] border-pink-50"
@@ -76,11 +76,11 @@ export default function SurpriseMessage({ user }: { user: string }) {
               required
             />
             <div className="absolute bottom-6 right-6 flex items-center gap-2 opacity-50 grayscale">
-               <Heart size={16} className="text-pink-400" fill="currentColor" />
-               <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">Sealed with love</span>
+              <Heart size={16} className="text-pink-400" fill="currentColor" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">Sealed with love</span>
             </div>
           </div>
-          
+
           <button
             type="submit"
             disabled={isSending || !content.trim()}
@@ -106,7 +106,7 @@ export default function SurpriseMessage({ user }: { user: string }) {
           {messages.length === 0 ? (
             <div className="py-20 text-center space-y-6 opacity-20 italic grayscale">
               <MessageSquare size={64} className="mx-auto" />
-              <p className="text-xl font-medium tracking-tight">Silence is beautiful, but words are magical. <br/>Start the conversation...</p>
+              <p className="text-xl font-medium tracking-tight">Silence is beautiful, but words are magical. <br />Start the conversation...</p>
             </div>
           ) : (
             messages.map((msg, index) => (
@@ -122,8 +122,8 @@ export default function SurpriseMessage({ user }: { user: string }) {
               >
                 <div className={cn(
                   "max-w-[85%] p-8 rounded-[3rem] shadow-sm relative group transition-all duration-500 hover:shadow-2xl",
-                  msg.sender === user 
-                    ? "bg-white border-2 border-pink-50 text-gray-600 rounded-tr-none" 
+                  msg.sender === user
+                    ? "bg-white border-2 border-pink-50 text-gray-600 rounded-tr-none"
                     : "bg-gradient-to-br from-[var(--color-primary)] to-[#c68b87] text-white rounded-tl-none"
                 )}>
                   {msg.sender !== user && (
@@ -131,11 +131,11 @@ export default function SurpriseMessage({ user }: { user: string }) {
                       <Heart size={18} fill="currentColor" />
                     </div>
                   )}
-                  
+
                   <p className="text-lg leading-relaxed font-serif italic">
                     &quot;{msg.content}&quot;
                   </p>
-                  
+
                   <div className={cn(
                     "mt-4 pt-4 border-t flex items-center justify-between gap-4",
                     msg.sender === user ? "border-pink-50/50" : "border-white/10"

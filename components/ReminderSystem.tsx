@@ -61,7 +61,7 @@ export default function ReminderSystem() {
             <Sparkles size={16} className="text-amber-400" />
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">Timeless Moments</p>
           </div>
-          <h2 className="text-5xl font-black text-gradient leading-tight italic tracking-tighter">Special Days</h2>
+          <h2 className="text-5xl font-black text-gradient leading-tight italic tracking-tighter pr-3">Special Days</h2>
         </div>
         <motion.button
           whileHover={{ scale: 1.1, rotate: 90 }}
@@ -75,19 +75,19 @@ export default function ReminderSystem() {
 
       <div className="space-y-8 relative px-4">
         <div className="absolute left-8 top-0 bottom-0 w-1.5 bg-gradient-to-b from-pink-200/50 via-pink-50 to-transparent rounded-full" />
-        
+
         <AnimatePresence>
           {isLoading ? (
             <div className="pl-20 py-10 opacity-30 italic font-medium">Syncing our universe...</div>
           ) : reminders.length === 0 ? (
             <div className="pl-20 py-10">
-              <p className="text-gray-300 italic text-xl tracking-tight leading-relaxed">The stars are waiting to be named. <br/>Add our first special day together.</p>
+              <p className="text-gray-300 italic text-xl tracking-tight leading-relaxed">The stars are waiting to be named. <br />Add our first special day together.</p>
             </div>
           ) : (
-            reminders.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((reminder, index) => {
+            reminders.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((reminder, index) => {
               const rDate = new Date(reminder.date);
               const daysLeft = Math.ceil((rDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-              
+
               return (
                 <motion.div
                   layout
@@ -101,28 +101,28 @@ export default function ReminderSystem() {
                     "absolute left-4 top-8 w-8 h-8 rounded-full flex items-center justify-center text-white ring-[8px] ring-white shadow-xl z-10 transition-transform duration-500 group-hover:scale-125",
                     reminder.type === 'anniversary' ? "bg-rose-500" : reminder.type === 'birthday' ? "bg-amber-400" : "bg-indigo-400"
                   )}>
-                    {reminder.type === 'anniversary' ? <Heart size={16} fill="white" /> : 
-                     reminder.type === 'birthday' ? <Gift size={16} /> : <Calendar size={16} />}
+                    {reminder.type === 'anniversary' ? <Heart size={16} fill="white" /> :
+                      reminder.type === 'birthday' ? <Gift size={16} /> : <Calendar size={16} />}
                   </div>
 
                   <div className="glass-card p-10 rounded-[3.5rem] flex flex-col md:flex-row md:items-center justify-between gap-6 group hover:shadow-[0_40px_80px_rgba(224,169,165,0.2)] transition-all duration-700 border-2 border-transparent hover:border-white">
                     <div className="space-y-2 text-left">
                       <div className="flex items-center gap-3">
-                         <span className="px-3 py-1 bg-white/50 rounded-lg text-[9px] font-black uppercase tracking-widest text-gray-400 border border-white/20">
-                           {reminder.type}
-                         </span>
-                         <div className="w-1.5 h-1.5 rounded-full bg-pink-100" />
-                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1 opacity-60">
-                           <Clock size={10} /> {daysLeft > 0 ? `${daysLeft} days until` : 'Happy day!'}
-                         </span>
+                        <span className="px-3 py-1 bg-white/50 rounded-lg text-[9px] font-black uppercase tracking-widest text-gray-400 border border-white/20">
+                          {reminder.type}
+                        </span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-pink-100" />
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1 opacity-60">
+                          <Clock size={10} /> {daysLeft > 0 ? `${daysLeft} days until` : 'Happy day!'}
+                        </span>
                       </div>
                       <h3 className="text-3xl font-black text-gray-800 transition-colors uppercase tracking-widest leading-none drop-shadow-sm group-hover:text-pink-500">
                         {reminder.title}
                       </h3>
                     </div>
-                    
+
                     <div className="text-left md:text-right pt-4 md:pt-0 border-t border-white/10 md:border-t-0">
-                      <div className="text-4xl font-black text-gradient italic tracking-tighter leading-none mb-1">
+                      <div className="text-4xl font-black text-gradient italic tracking-tighter leading-none mb-1 pr-3">
                         {rDate.getDate()}
                       </div>
                       <div className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-300">
@@ -140,7 +140,7 @@ export default function ReminderSystem() {
       <AnimatePresence>
         {showModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-rose-900/10 backdrop-blur-xl">
-            <motion.div 
+            <motion.div
               initial={{ y: 50, opacity: 0, scale: 0.95 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 50, opacity: 0, scale: 0.95 }}
@@ -150,7 +150,7 @@ export default function ReminderSystem() {
                 <h3 className="text-3xl font-black text-gray-800 tracking-tighter">New Special Day</h3>
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] italic">Marking down another reason to celebrate us</p>
               </div>
-              
+
               <form onSubmit={handleAdd} className="space-y-6">
                 <div className="space-y-4">
                   <div className="space-y-1">
@@ -159,34 +159,34 @@ export default function ReminderSystem() {
                       type="text"
                       placeholder="e.g. First Kiss Anniversary"
                       value={newReminder.title}
-                      onChange={e => setNewReminder({...newReminder, title: e.target.value})}
+                      onChange={e => setNewReminder({ ...newReminder, title: e.target.value })}
                       className="w-full p-6 bg-white border border-gray-100 rounded-[2rem] outline-none focus:ring-4 focus:ring-pink-50 transition-all font-bold text-lg"
                       required
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                     <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">Date</label>
-                        <input
-                          type="date"
-                          value={newReminder.date}
-                          onChange={e => setNewReminder({...newReminder, date: e.target.value})}
-                          className="w-full p-6 bg-white border border-gray-100 rounded-[2rem] outline-none focus:ring-4 focus:ring-pink-50 transition-all font-bold"
-                          required
-                        />
-                     </div>
-                     <div className="space-y-1">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">Category</label>
-                        <select 
-                          value={newReminder.type}
-                          onChange={e => setNewReminder({...newReminder, type: e.target.value as Reminder['type']})}
-                          className="w-full p-6 bg-white border border-gray-100 rounded-[2rem] outline-none focus:ring-4 focus:ring-pink-50 transition-all font-bold appearance-none cursor-pointer"
-                        >
-                          <option value="anniversary">Anniversary</option>
-                          <option value="birthday">Birthday</option>
-                          <option value="event">Special Event</option>
-                        </select>
-                     </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">Date</label>
+                      <input
+                        type="date"
+                        value={newReminder.date}
+                        onChange={e => setNewReminder({ ...newReminder, date: e.target.value })}
+                        className="w-full p-6 bg-white border border-gray-100 rounded-[2rem] outline-none focus:ring-4 focus:ring-pink-50 transition-all font-bold"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 pl-4">Category</label>
+                      <select
+                        value={newReminder.type}
+                        onChange={e => setNewReminder({ ...newReminder, type: e.target.value as Reminder['type'] })}
+                        className="w-full p-6 bg-white border border-gray-100 rounded-[2rem] outline-none focus:ring-4 focus:ring-pink-50 transition-all font-bold appearance-none cursor-pointer"
+                      >
+                        <option value="anniversary">Anniversary</option>
+                        <option value="birthday">Birthday</option>
+                        <option value="event">Special Event</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 

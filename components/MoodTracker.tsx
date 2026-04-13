@@ -111,7 +111,7 @@ export default function MoodTracker({ user }: { user: string }) {
               <div className="w-36 h-36 bg-gradient-to-br from-white to-pink-50 rounded-[3.5rem] flex items-center justify-center text-7xl shadow-[0_20px_40px_rgba(224,169,165,0.2)] ring-[16px] ring-pink-50/30 animate-float border border-white">
                 {moods.find(m => m.id === partnerMoodToday.mood)?.heart || '✨'}
               </div>
-              <p className="text-3xl font-black text-gradient uppercase tracking-tighter italic">
+              <p className="text-3xl font-black text-gradient pr-3 uppercase tracking-tighter italic">
                 {partnerMoodToday.label}
               </p>
             </motion.div>
@@ -160,7 +160,7 @@ export default function MoodTracker({ user }: { user: string }) {
 
             <div className="space-y-4">
               <h3 className="text-3xl font-black text-gray-800 uppercase tracking-tighter leading-tight italic">
-                Today, you feel <br /><span className="text-gradient drop-shadow-sm">{selectedMood}</span>
+                Today, you feel <br /><span className="text-gradient drop-shadow-sm pr-3">{selectedMood}</span>
               </h3>
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-pink-50 rounded-full border border-pink-100 border-dashed">
                 <div className="w-1.5 h-1.5 bg-pink-400 rounded-full animate-ping" />
@@ -262,16 +262,16 @@ export default function MoodTracker({ user }: { user: string }) {
                         <span className="drop-shadow-sm">{moodInfo?.heart}</span>
                       </div>
                       <div className="flex-1 min-w-0 py-1">
-                         <div className="flex justify-between items-start gap-2 mb-1">
-                            <h4 className="font-black text-gray-800 text-lg leading-none truncate">{moodInfo?.label || entry.label}</h4>
-                            <span className={cn(
-                              "text-[9px] uppercase tracking-widest font-black px-2.5 py-1 rounded-full shrink-0 border",
-                              isMe ? "bg-pink-50 text-pink-500 border-pink-100" : "bg-blue-50 text-blue-500 border-blue-100"
-                            )}>
-                              {userName}
-                            </span>
-                         </div>
-                         <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider opacity-80">{format(entryDate, "MMM d • h:mm a")}</p>
+                        <div className="flex justify-between items-start gap-2 mb-1">
+                          <h4 className="font-black text-gray-800 text-lg leading-none truncate">{moodInfo?.label || entry.label}</h4>
+                          <span className={cn(
+                            "text-[9px] uppercase tracking-widest font-black px-2.5 py-1 rounded-full shrink-0 border",
+                            isMe ? "bg-pink-50 text-pink-500 border-pink-100" : "bg-blue-50 text-blue-500 border-blue-100"
+                          )}>
+                            {userName}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-wider opacity-80">{format(entryDate, "MMM d • h:mm a")}</p>
                       </div>
                     </div>
                   </motion.div>
