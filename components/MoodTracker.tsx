@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Smile, Frown, Heart, Coffee, Sun, CloudRain, Star, Sparkles } from "lucide-react";
+import { Smile, Frown, Heart, Coffee, Sun, CloudRain, Star, Sparkles, Zap, Rocket, Palette, Thermometer, Flame, Brain, CloudLightning, Moon, Ghost, Utensils, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
 import { format } from "date-fns";
@@ -10,10 +10,22 @@ import { format } from "date-fns";
 const moods = [
   { id: 'happy', icon: Smile, label: 'Happy', color: 'bg-yellow-50 text-yellow-600', heart: '😊' },
   { id: 'loved', icon: Heart, label: 'Loved', color: 'bg-pink-50 text-pink-600', heart: '💖' },
-  { id: 'calm', icon: Coffee, label: 'Calm', color: 'bg-blue-50 text-blue-600', heart: '✨' },
+  { id: 'excited', icon: Zap, label: 'Excited', color: 'bg-purple-50 text-purple-600', heart: '⚡' },
   { id: 'energetic', icon: Sun, label: 'Energetic', color: 'bg-orange-50 text-orange-600', heart: '🔥' },
-  { id: 'sad', icon: Frown, label: 'Sad', color: 'bg-indigo-50 text-indigo-600', heart: '🥺' },
+  { id: 'productive', icon: Rocket, label: 'Productive', color: 'bg-emerald-50 text-emerald-600', heart: '🚀' },
+  { id: 'calm', icon: Coffee, label: 'Calm', color: 'bg-blue-50 text-blue-600', heart: '✨' },
+  { id: 'creative', icon: Palette, label: 'Creative', color: 'bg-indigo-50 text-indigo-600', heart: '🎨' },
+  { id: 'grateful', icon: Star, label: 'Grateful', color: 'bg-amber-50 text-amber-600', heart: '🙏' },
   { id: 'tired', icon: CloudRain, label: 'Tired', color: 'bg-slate-50 text-slate-600', heart: '☁️' },
+  { id: 'sad', icon: Frown, label: 'Sad', color: 'bg-zinc-50 text-zinc-600', heart: '🥺' },
+  { id: 'sick', icon: Thermometer, label: 'Sick', color: 'bg-red-50 text-red-600', heart: '🤒' },
+  { id: 'angry', icon: Flame, label: 'Angry', color: 'bg-rose-50 text-rose-600', heart: '😤' },
+  { id: 'stressed', icon: Brain, label: 'Stressed', color: 'bg-stone-50 text-stone-600', heart: '🤯' },
+  { id: 'anxious', icon: CloudLightning, label: 'Anxious', color: 'bg-cyan-50 text-cyan-600', heart: '😰' },
+  { id: 'sleepy', icon: Moon, label: 'Sleepy', color: 'bg-violet-50 text-violet-600', heart: '😴' },
+  { id: 'bored', icon: Ghost, label: 'Bored', color: 'bg-neutral-50 text-neutral-600', heart: '🥱' },
+  { id: 'hungry', icon: Utensils, label: 'Hungry', color: 'bg-orange-50 text-orange-600', heart: '🍕' },
+  { id: 'proud', icon: Trophy, label: 'Proud', color: 'bg-yellow-50 text-yellow-600', heart: '🏆' },
 ];
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -137,8 +149,8 @@ export default function MoodTracker({ user }: { user: string }) {
       <AnimatePresence mode="wait">
         {isLoading ? (
           <div className="grid grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-32 bg-gray-100/50 rounded-[2.5rem] animate-pulse" />
+            {[...Array(moods.length)].map((_, i) => (
+              <div key={i} className="h-40 bg-gray-100/50 rounded-[3rem] animate-pulse" />
             ))}
           </div>
         ) : alreadySetToday ? (
@@ -160,7 +172,7 @@ export default function MoodTracker({ user }: { user: string }) {
 
             <div className="space-y-4">
               <h3 className="text-3xl font-black text-gray-800 uppercase tracking-tighter leading-tight italic">
-                Today, you feel <br /><span className="text-gradient drop-shadow-sm pr-3">{selectedMood}</span>
+                Today, you feel <br /><span className="text-gradient drop-shadow-sm pr-3">{moods.find(m => m.id === selectedMood)?.label || selectedMood}</span>
               </h3>
               <div className="inline-flex items-center gap-3 px-6 py-3 bg-pink-50 rounded-full border border-pink-100 border-dashed">
                 <div className="w-1.5 h-1.5 bg-pink-400 rounded-full animate-ping" />
