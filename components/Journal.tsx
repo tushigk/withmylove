@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Book, Heart, Plus, MapPin, Calendar, Search, Star, Edit3, History, X, Check } from "lucide-react";
+import { Book, Heart, Plus, MapPin, Calendar, Search, Star, Edit3, History, X, Check, ThumbsUp, ThumbsDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import useSWR from "swr";
 
@@ -15,7 +15,8 @@ interface JournalEntry {
   author: string;
   createdAt: string;
   updatedAt: string;
-  liked?: boolean;
+  likes?: string[];
+  dislikes?: string[];
   history?: { title: string; content: string; editedAt: string }[];
 }
 
@@ -71,6 +72,19 @@ export default function Journal({ user }: { user: string }) {
       console.error(err);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleReaction = async (id: string, type: "like" | "dislike") => {
+    try {
+      await fetch("/api/journal", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, type, user }),
+      });
+      mutate();
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -285,7 +299,39 @@ export default function Journal({ user }: { user: string }) {
                   <div className="flex items-center gap-1 text-[10px] font-black text-gray-300 uppercase tracking-widest italic">
                     <MapPin size={12} /> Captured in our hearts
                   </div>
-                  <Star className="text-amber-200" size={16} fill="currentColor" />
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleReaction(entry._id, "like")}
+                        className={cn(
+                          "flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-300",
+                          entry.likes?.includes(user)
+                            ? "bg-pink-100 text-pink-500 shadow-sm"
+                            : "bg-gray-50 text-gray-400 hover:bg-pink-50 hover:text-pink-400"
+                        )}
+                      >
+                        <ThumbsUp size={14} className={entry.likes?.includes(user) ? "fill-current" : ""} />
+                        <span className="text-[10px] font-bold">{entry.likes?.length || 0}</span>
+                      </motion.button>
+
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleReaction(entry._id, "dislike")}
+                        className={cn(
+                          "flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-300",
+                          entry.dislikes?.includes(user)
+                            ? "bg-gray-200 text-gray-600 shadow-sm"
+                            : "bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-500"
+                        )}
+                      >
+                        <ThumbsDown size={14} className={entry.dislikes?.includes(user) ? "fill-current" : ""} />
+                        <span className="text-[10px] font-bold">{entry.dislikes?.length || 0}</span>
+                      </motion.button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>

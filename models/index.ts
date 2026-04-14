@@ -6,7 +6,8 @@ const JournalSchema = new Schema({
   content: { type: String, required: true },
   author: { type: String, required: true },
   location: { type: String },
-  liked: { type: Boolean, default: false },
+  likes: [{ type: String }],
+  dislikes: [{ type: String }],
   history: [{
     title: String,
     content: String,
