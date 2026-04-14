@@ -6,7 +6,12 @@ const JournalSchema = new Schema({
   content: { type: String, required: true },
   author: { type: String, required: true },
   location: { type: String },
-  liked: { type: Boolean, default: false }
+  liked: { type: Boolean, default: false },
+  history: [{
+    title: String,
+    content: String,
+    editedAt: { type: Date, default: Date.now }
+  }]
 }, { timestamps: true });
 
 const MoodSchema = new Schema({
@@ -43,6 +48,7 @@ const PhotoSchema = new Schema({
 }, { timestamps: true });
 
 // Force remove models if they exist to refresh schema in development
+if (models.Journal) delete models.Journal;
 if (models.Mood) delete models.Mood;
 if (models.Photo) delete models.Photo;
 

@@ -22,3 +22,39 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create journal entry" }, { status: 400 });
   }
 }
+export async function PATCH(request: Request) {
+  try {
+    await dbConnect();
+    const { id, title, content } = await request.json();
+    
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    }
+
+    const existingEntry = await Journal.findById(id);
+    if (!existingEntry) {
+      return NextResponse.json({ error: "Entry not found" }, { status: 404 });
+    }
+
+    // Initialize history if it doesn't exist
+    if (!existingEntry.history) {
+      existingEntry.history = [];
+    }
+
+    // Push current state to history before updating
+    existingEntry.history.push({
+      title: existingEntry.title,
+      content: existingEntry.content,
+      editedAt: existingEntry.updatedAt || existingEntry.createdAt || new Date()
+    });
+
+    existingEntry.title = title;
+    existingEntry.content = content;
+    
+    await existingEntry.save();
+    return NextResponse.json(existingEntry);
+  } catch (err: any) {
+    console.error("Journal Update Error:", err);
+    return NextResponse.json({ error: err.message || "Failed to update journal entry" }, { status: 400 });
+  }
+}
